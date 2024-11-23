@@ -14,6 +14,11 @@ int     ft_check_parameters(int ac, char **av, int *v_option, char ***destinatio
 		return (0);
 	//Get destination address
 	*destination_addr = ft_get_destination_address(ac, av);
+	if (destination_addr == NULL)
+	{
+		printf("Fail to allocate memory\n");
+		return (0);
+	}
 	int i = 0;
 	while (destination_addr != NULL && destination_addr[0] != NULL && destination_addr[0][i] != NULL)
 	{

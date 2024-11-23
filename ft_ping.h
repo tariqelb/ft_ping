@@ -17,6 +17,7 @@
 # include <time.h>
 # include <netinet/ip_icmp.h>
 # include <signal.h>
+# include <math.h>
 
 //link list
 # include "link_list/libft.h"
@@ -26,7 +27,7 @@
 # define TIMETOLIVE 64
 # define PAYLOADSTRING "Hi, this is Ping echo request!Abcde"
 # define PAYLOADLENGTH 36
-
+# define EPSILON 1e-6
 
 struct packet_timer {
     struct timeval  send_time;
@@ -66,7 +67,7 @@ char	    **ft_split(char const *s, char c);
 int		                ft_get_random_id();
 uint16_t                compute_checksum(void *data, int len);
 struct packet_timer     ft_initialize_timer(int seq_nbr);
-void                    ft_set_recv_time(t_list **p_list, int seq_nbr, int len);
+void                    ft_set_recv_time(int seq_nbr, int len);
 
 //ft_check_and_resolve_addr.c
 int         ft_check_is_valid_ip(char *addr);
@@ -102,6 +103,7 @@ void        ft_initialize_icmp_header(struct icmp_header **icmp, struct packet *
 
 //ft_signal_handler.c
 void        ft_signal_handler(int a);
-
+double      ft_get_packet_milisec(int seq_nbr);
+double ft_get_stddev(int nbr_of_packet, double avg);
 
 #endif

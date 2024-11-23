@@ -57,8 +57,7 @@ int	main(int ac, char **av)
                 sizeof(pack.packet_address));
 		if (status <= 0)
 		{
-			printf("Fail to send packet\n");
-			return (0);
+			printf("ping: sendto: Network is unreachable\n");
 			continue;
 		}
 		else
@@ -66,12 +65,21 @@ int	main(int ac, char **av)
 			//get current time for the packet and set sequence number
 			struct packet_timer new_pack_timer;
 			new_pack_timer = ft_initialize_timer(pack.sequence_number);
+			if (new_pack_timer.error != 0)
+			{
+				printf("fail to set time 1");
+			}
 			t_list *elem = ft_lstnew(&new_pack_timer, sizeof(struct packet_timer));
 			if (elem != NULL)
+			{
 				ft_lstadd_back(&timer_list, elem);
+			}
 			else 
 			{
 				//free and handle the error ;
+				ft_free_destination(destination_addr);
+				printf("Fail to allocate memory\n");
+				return (0);
 			}
 		}
 		// printf("packet sent......\n");
@@ -91,7 +99,12 @@ int	main(int ac, char **av)
 		else if (status == 0)
 		{
 			printf("Packet time out\n");
-			exit(1);
+			//exit(1);
+			ft_set_recv_time(pack.sequence_number, -1);
+			pack.sequence_number += 1;
+			ft_initialize_icmp_header(&icmp, &pack);
+			sleep(1);
+			continue;
 		}
 		else
 		{
@@ -121,22 +134,31 @@ int	main(int ac, char **av)
 						inet_ntoa(*(struct in_addr *)&ip_header->saddr),
 						sent_data_len);
 					}
-					printf("%d bytes from %s: icmp_seq=%d ttl=%d\n",
-						total_recv_data,
-						inet_ntoa(*(struct in_addr *)&ip_header->saddr),
-						 pack.sequence_number,
-						 ip_header->ttl);
-
-					if (icmp_header->type == ICMP_ECHOREPLY)
-						printf("This is an ICMP Echo Reply.\n");
+					ft_set_recv_time(pack.sequence_number, len);
+					double ms = ft_get_packet_milisec(pack.sequence_number);
+					if(ms > EPSILON)
+					{
+						printf("%d bytes from %s: icmp_seq=%d ttl=%d time=%.3f ms\n",
+							total_recv_data,
+							inet_ntoa(*(struct in_addr *)&ip_header->saddr),
+							pack.sequence_number,
+							ip_header->ttl,
+							ms);
+					}
+					else
+					{
+						printf("Fail to get packet time : %d\n", len);
+					}
+					// if (icmp_header->type == ICMP_ECHOREPLY)
+					// 	printf("This is an ICMP Echo Reply.\n");
 
 				}
-				if (len <= 0)
+				else if (len <= 0)
 				{
-						printf("Fail to receive data\n");
-						//return (0);
+					ft_set_recv_time(pack.sequence_number, len);
+					//printf("Fail to receive data\n");
+					//return (0);
 				}
-				ft_set_recv_time(&timer_list, pack.sequence_number, len);
 			}
 		}
 		sleep(1);

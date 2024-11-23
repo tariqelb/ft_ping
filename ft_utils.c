@@ -49,13 +49,14 @@ struct packet_timer     ft_initialize_timer(int seq_nbr)
     return (p_timer);
 }
 
-void    ft_set_recv_time(t_list **p_list, int seq_nbr, int len)
+void    ft_set_recv_time(int seq_nbr, int len)
 {
     // len is the received bytes if <= 0 then an error occur 
     struct packet_timer *p_timer;
-    if (p_list == NULL || *p_list == NULL)
+    t_list *head = timer_list; 
+    int i = 0;
+    if (head == NULL)
         return;
-    t_list *head = *p_list; 
     while (head != NULL)
     {
         p_timer = (struct packet_timer *) head->content;
@@ -66,7 +67,8 @@ void    ft_set_recv_time(t_list **p_list, int seq_nbr, int len)
                 p_timer->error = 1;
             }
             return;
-        }   
+        }
         head = head->next;
+        i++;
     }
 }
