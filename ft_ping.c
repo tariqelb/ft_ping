@@ -36,7 +36,7 @@ int	main(int ac, char **av)
 	if (destination_addr && destination_addr[1])
 	{
 		int i = 0;
-		while (destination_addr[1][i] != '\0')
+		while (destination_addr[0][i] != '\0')
 		{
 			address[i] = destination_addr[0][i];
 			i++;
