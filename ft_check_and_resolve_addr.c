@@ -139,8 +139,9 @@ int     ft_check_and_resolve_addr(char **destination_addr)
         while (destination_addr[i] != NULL)
             i++;
         ft_free_new_destination(destination_addr, i);
+        return (1);
     }
-    return (status);
+    return (0);
 }
 
 
