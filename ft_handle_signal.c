@@ -190,5 +190,6 @@ void    ft_signal_handler(int a)
      nbr_of_packet_sent, nbr_of_packet_sent - nbr_of_packet_lost, ft_get_packet_percentage(nbr_of_packet_sent, nbr_of_packet_lost));
     stddev = ft_get_stddev(i - nbr_of_packet_lost, avg);
     printf("round-trip min/avg/max/stddev = %.3f/%.3f/%.3f/%.3f ms\n", min, avg, max, stddev);
+    ft_lstclear(&timer_list, &free);
     exit(0);
 }

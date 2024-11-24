@@ -12,7 +12,7 @@ int	main(int ac, char **av)
 	struct timeval		timeout;
 	struct icmp_header	*icmp;
 	int					ping_first_string_flag;
-
+	char				address[100];
 
 	ping_first_string_flag = 0;
 	pack.sequence_number = 1;
@@ -21,19 +21,29 @@ int	main(int ac, char **av)
 	if (icmp == NULL)
 	{
 		printf("Fail to allocate memory\n");
-		return (0);
+		return (1);
 	}
 
 
 	status = ft_check_parameters(ac, av, &v_option, &destination_addr); 
 	if (status)
-		return (0);
+		return (1);
 	//return (0);
 	
 
 	socket_fd = ft_initialize_socket(&pack, destination_addr);
 	ft_initialize_icmp_header(&icmp, &pack);	
-
+	if (destination_addr && destination_addr[1])
+	{
+		int i = 0;
+		while (destination_addr[1][i] != '\0')
+		{
+			address[i] = destination_addr[0][i];
+			i++;
+		}
+		address[i] = '\0';
+		ft_free_destination(destination_addr);
+	}
 
 
 
@@ -77,9 +87,8 @@ int	main(int ac, char **av)
 			else 
 			{
 				//free and handle the error ;
-				ft_free_destination(destination_addr);
 				printf("Fail to allocate memory\n");
-				return (0);
+				return (1);
 			}
 		}
 		// printf("packet sent......\n");
@@ -93,8 +102,7 @@ int	main(int ac, char **av)
 		if (status < 0)
 		{
 			printf("Error on select\n");
-			ft_free_destination(destination_addr);
-			return (0);
+			return (1);
 		}
 		else if (status == 0)
 		{
@@ -130,7 +138,7 @@ int	main(int ac, char **av)
 					{
 						ping_first_string_flag = 1;
 						printf("PING %s (%s) %d data byte\n", 
-						destination_addr[0],
+						address,
 						inet_ntoa(*(struct in_addr *)&ip_header->saddr),
 						sent_data_len);
 					}
@@ -165,7 +173,6 @@ int	main(int ac, char **av)
 		pack.sequence_number += 1;
 		ft_initialize_icmp_header(&icmp, &pack);
 	}
-	ft_free_destination(destination_addr);
 	close(socket_fd);
 	return (0);
 }
