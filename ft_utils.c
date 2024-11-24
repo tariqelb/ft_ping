@@ -53,7 +53,7 @@ void    ft_set_recv_time(int seq_nbr, int len)
 {
     // len is the received bytes if <= 0 then an error occur 
     struct packet_timer *p_timer;
-    t_list *head = timer_list; 
+    t_list *head = timer_icmp->timer_list; 
     int i = 0;
     if (head == NULL)
         return;

@@ -33,9 +33,9 @@ double      ft_get_packet_milisec(int seq_nbr)
     struct packet_timer *p_timer;
     t_list *head;
     
-    if (timer_list != NULL)
+    if (timer_icmp->timer_list != NULL)
     {
-        head = timer_list;
+        head = timer_icmp->timer_list;
         while (head != NULL)
         {
             p_timer = (struct packet_timer *) head->content;
@@ -75,7 +75,7 @@ double ft_get_stddev(int nbr_of_packet, double avg)
     {
         return (0.0);
     }
-    t_list  *head = timer_list;
+    t_list  *head = timer_icmp->timer_list;
     double  time_sub_avg_power_two[nbr_of_packet];
     double  time_sum  = EPSILON;
     double  time_avg  = 0.0;
@@ -114,7 +114,7 @@ void    ft_nbr_of_packet(int *sent, int *lost)
 
     *sent = 0;
     *lost = 0;
-    head = timer_list;
+    head = timer_icmp->timer_list;
     
     i = 0;
     while (head)
@@ -149,12 +149,13 @@ void    ft_signal_handler(int a)
     t_list *head;
 
 
-    if (timer_list != NULL)
+    if (timer_icmp->timer_list != NULL)
     {
-        head = timer_list;
+        head = timer_icmp->timer_list;
         while (head != NULL)
         {
             double ms = ft_get_time_in_msecond(head);
+
             if (ms == EPSILON)
                 nbr_of_packet_lost++;
             else
@@ -174,7 +175,7 @@ void    ft_signal_handler(int a)
                     max = ms;
                 }
             }
-            // printf("time taken : %.3f\n", ft_get_time_in_msecond(head));
+            //printf("time taken : %f\n", ft_get_time_in_msecond(head));
             //printf("time taken : %.3f\n", ms);
             head = head->next;
             i++;
@@ -185,11 +186,14 @@ void    ft_signal_handler(int a)
     {
         avg /= (i);
     }
-    head = timer_list;
+    head = timer_icmp->timer_list;
     printf("\n%d packets transmitted, %d packets received, %d%% packet loss\n",
      nbr_of_packet_sent, nbr_of_packet_sent - nbr_of_packet_lost, ft_get_packet_percentage(nbr_of_packet_sent, nbr_of_packet_lost));
     stddev = ft_get_stddev(i - nbr_of_packet_lost, avg);
     printf("round-trip min/avg/max/stddev = %.3f/%.3f/%.3f/%.3f ms\n", min, avg, max, stddev);
-    ft_lstclear(&timer_list, &free);
+    ft_lstclear(&timer_icmp->timer_list, &free);
+    free(timer_icmp->icmp);
+    close(timer_icmp->socket_fd);
+    free(timer_icmp);
     exit(0);
 }

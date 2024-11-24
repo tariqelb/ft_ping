@@ -28,4 +28,5 @@ int     ft_check_parameters(int ac, char **av, int *v_option, char ***destinatio
 	status = ft_check_and_resolve_addr(*destination_addr);
 	if (status)
 		return (1);
+	return (0);
 }

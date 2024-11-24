@@ -57,7 +57,16 @@ struct icmp_header {
 };
 
 //global variable
-extern t_list				*timer_list;
+struct icmp_and_packet_timer
+{
+    struct icmp_header *icmp;
+    t_list              *timer_list;
+    int                 socket_fd;
+};
+
+extern struct icmp_and_packet_timer *timer_icmp;
+
+//extern t_list				*timer_list;
 
 
 //ft_split.c
