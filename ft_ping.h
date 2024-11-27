@@ -18,11 +18,12 @@
 # include <netinet/ip_icmp.h>
 # include <signal.h>
 # include <math.h>
+# include <errno.h>
 
 //link list
 # include "link_list/libft.h"
 
-# define TIMEOUTSEC  10
+# define TIMEOUTSEC  1
 # define TIMEOUTUSEC 0
 # define TIMETOLIVE 64
 # define PAYLOADSTRING "Hi, this is Ping echo request!Abcde"
@@ -59,9 +60,13 @@ struct icmp_header {
 //global variable
 struct icmp_and_packet_timer
 {
-    struct icmp_header *icmp;
+    struct icmp_header  *icmp;
     t_list              *timer_list;
     int                 socket_fd;
+    char                *resolved_address;
+    char                address[100];
+    int                 nbr_of_packet_sent;
+    int                 nbr_of_packet_lost;
 };
 
 extern struct icmp_and_packet_timer *timer_icmp;
@@ -107,12 +112,21 @@ int         ft_initialize_socket(struct packet *pack, char **destination_addr);
 int         ft_check_parameters(int ac, char **av, int *v_option, char ***destination_addr);
 
 //ft_initialize_icmp_header.c
-void        ft_initialize_icmp_header(struct icmp_header **icmp, struct packet *pack);
+void        ft_initialize_icmp_header(struct icmp_header **icmp, struct packet *pack, int rand);
 // struct packet  ft_initialize_icmp_header(struct icmp_header **icmp, struct packet pack);
 
 //ft_signal_handler.c
 void        ft_signal_handler(int a);
 double      ft_get_packet_milisec(int seq_nbr);
 double ft_get_stddev(int nbr_of_packet, double avg);
+
+//ft_print_ip_icmp_header.c
+void    ft_print_ip_header(struct iphdr *ip_header);
+void    ft_print_icmp_header(struct icmp_header *icmp_header, int size);
+void    ft_print_recv_packet(struct iphdr *ip_header, int size, struct icmp_header *icmp_header);
+void    ft_print_source_hostname(uint32_t ip_address);
+
+//ft_print_icmp_message.c icmp error types and codes
+void    ft_print_icmp_message(int type, int code);
 
 #endif

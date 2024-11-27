@@ -6,6 +6,7 @@ struct icmp_and_packet_timer *timer_icmp = NULL;
 
 int	main(int ac, char **av)
 {
+	int					rand;
 	int 				status = 0;
 	int 				v_option = 0;
 	//int 				socket_fd = 0;
@@ -13,8 +14,8 @@ int	main(int ac, char **av)
 	struct packet		pack;
 	struct timeval		timeout;
 	//struct icmp_header	*icmp;
-	int					ping_first_string_flag;
-	char				address[100];
+	//char				address[100];
+	char				resolve_address[100];//host resole to ip to print in the first string
 
 	timer_icmp = NULL;
 	timer_icmp = (struct icmp_and_packet_timer *) malloc(sizeof(struct icmp_and_packet_timer));
@@ -25,8 +26,9 @@ int	main(int ac, char **av)
 	}
 	timer_icmp->icmp = NULL;
 	timer_icmp->timer_list = NULL;
+	timer_icmp->nbr_of_packet_sent = 0;
+	timer_icmp->nbr_of_packet_lost = 0;
 
-	ping_first_string_flag = 0;
 	pack.sequence_number = 1;
 	
 	//icmp = NULL;
@@ -51,16 +53,23 @@ int	main(int ac, char **av)
 	
 
 	timer_icmp->socket_fd = ft_initialize_socket(&pack, destination_addr);
-	ft_initialize_icmp_header(&timer_icmp->icmp, &pack);	
+	if (timer_icmp->socket_fd < 0)
+	{
+		free(timer_icmp->icmp);
+		free(timer_icmp);
+		return (1);
+	}
+	rand = ft_get_random_id(); 
+	ft_initialize_icmp_header(&timer_icmp->icmp, &pack, rand);	
 	if (destination_addr && destination_addr[0])
 	{
 		int i = 0;
 		while (destination_addr[0][i] != '\0')
 		{
-			address[i] = destination_addr[0][i];
+			timer_icmp->address[i] = destination_addr[0][i];
 			i++;
 		}
-		address[i] = '\0';
+		timer_icmp->address[i] = '\0';
 		ft_free_destination(destination_addr);
 	}
 
@@ -75,7 +84,19 @@ int	main(int ac, char **av)
 
 	//SIGINT signal handler
 	signal(SIGINT, ft_signal_handler);
-
+	int sent_data_len = sizeof(pack.send_buffer) - sizeof(struct icmp_header);
+	char hex_string[20];
+	printf("PING %s (%s) %d data byte", 
+		timer_icmp->address,
+		timer_icmp->resolved_address,
+		sent_data_len);
+	if (v_option)
+	{
+		sprintf(hex_string, "0x%04X", rand);
+		printf(", id %s = %d\n", hex_string, rand);
+	}
+	else
+		printf("\n");
 	while (1)
 	{
 		status = sendto(timer_icmp->socket_fd, 
@@ -86,11 +107,13 @@ int	main(int ac, char **av)
                 sizeof(pack.packet_address));
 		if (status <= 0)
 		{
-			printf("ping: sendto: Network is unreachable\n");
+			printf("ping: sendto: %s\n", strerror(errno));
 			continue;
 		}
 		else
 		{
+			timer_icmp->nbr_of_packet_sent++;
+			timer_icmp->nbr_of_packet_lost++;
 			//get current time for the packet and set sequence number
 			struct packet_timer new_pack_timer;
 			new_pack_timer = ft_initialize_timer(pack.sequence_number);
@@ -133,10 +156,11 @@ int	main(int ac, char **av)
 		else if (status == 0)
 		{
 			printf("Packet time out\n");
+			//timer_icmp->nbr_of_packet_lost++;
 			//exit(1);
 			ft_set_recv_time(pack.sequence_number, -1);
 			pack.sequence_number += 1;
-			ft_initialize_icmp_header(&timer_icmp->icmp, &pack);
+			ft_initialize_icmp_header(&timer_icmp->icmp, &pack, rand);
 			sleep(1);
 			continue;
 		}
@@ -159,32 +183,38 @@ int	main(int ac, char **av)
 					
 					int total_recv_data = len;// - ip_header_len - sizeof(icmp_header);
 					//length of sent data
-					int sent_data_len = sizeof(pack.send_buffer) - sizeof(struct icmp_header);
-					if (!ping_first_string_flag)	
+					
+					if (icmp_header->type == 0)
 					{
-						ping_first_string_flag = 1;
-						printf("PING %s (%s) %d data byte\n", 
-						address,
-						inet_ntoa(*(struct in_addr *)&ip_header->saddr),
-						sent_data_len);
+						timer_icmp->nbr_of_packet_lost--;
+						ft_set_recv_time(pack.sequence_number, len);
+						double ms = ft_get_packet_milisec(pack.sequence_number);
+						if(ms > EPSILON)
+						{
+							printf("%d bytes from %s: icmp_seq=%d ttl=%d time=%.3f ms\n",
+								total_recv_data,
+								inet_ntoa(*(struct in_addr *)&ip_header->saddr),
+								pack.sequence_number,
+								ip_header->ttl,
+								ms);
+						}
 					}
-					ft_set_recv_time(pack.sequence_number, len);
-					double ms = ft_get_packet_milisec(pack.sequence_number);
-					if(ms > EPSILON)
+					else if (v_option)
 					{
-						printf("%d bytes from %s: icmp_seq=%d ttl=%d time=%.3f ms\n",
-							total_recv_data,
-							inet_ntoa(*(struct in_addr *)&ip_header->saddr),
-							pack.sequence_number,
-							ip_header->ttl,
-							ms);
+						ft_print_recv_packet(ip_header, len, icmp_header);
+						ft_print_ip_header(ip_header);
+						ft_print_icmp_header(timer_icmp->icmp, sizeof(pack.send_buffer));
+						ft_set_recv_time(pack.sequence_number, -1);
+
 					}
 					else
 					{
+						//timer_icmp->nbr_of_packet_lost++;
+						ft_set_recv_time(pack.sequence_number, -1);
 						printf("Fail to get packet time : %d\n", len);
 					}
 					// if (icmp_header->type == ICMP_ECHOREPLY)
-					// 	printf("This is an ICMP Echo Reply.\n");
+					printf("This is an ICMP Echo . : %d %d recv size: %d\n", icmp_header->type , icmp_header->code, len);
 
 				}
 				else if (len <= 0)
@@ -197,7 +227,7 @@ int	main(int ac, char **av)
 		}
 		sleep(1);
 		pack.sequence_number += 1;
-		ft_initialize_icmp_header(&timer_icmp->icmp, &pack);
+		ft_initialize_icmp_header(&timer_icmp->icmp, &pack, rand);
 	}
 	free(timer_icmp->icmp);
 	ft_lstclear(&timer_icmp->timer_list, &free);

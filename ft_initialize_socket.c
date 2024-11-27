@@ -1,12 +1,13 @@
 #include "ft_ping.h"
 
-int     ft_initialize_socket(struct packet *pack, char **destination_addr)
+int	ft_initialize_socket(struct packet *pack, char **destination_addr)
 {
     int     broadcast;
     int     socket_fd;
     int     set_opt;
     int     ttl;
     int     i;
+	char	resolved_address[100];
 
     broadcast = 1;
     ttl = TIMETOLIVE;
@@ -18,7 +19,7 @@ int     ft_initialize_socket(struct packet *pack, char **destination_addr)
     socket_fd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
 	if (socket_fd < 0)
 	{
-		printf("Error opening the socket: (%d)\n", socket_fd);
+		printf("Error opening the socket\n");
 		return (-1);
 	}
 
@@ -27,14 +28,14 @@ int     ft_initialize_socket(struct packet *pack, char **destination_addr)
 	set_opt = setsockopt(socket_fd, IPPROTO_IP, IP_TTL, &ttl, sizeof(ttl));
 	if (set_opt != 0)
 	{
-		printf("Error setting time-to-live ttl");
+		printf("Error setting time-to-live ttl\n");
 		return (-1);
 	}
 	//set allow sending broadcast packet (why, goal)
 	set_opt = setsockopt(socket_fd, SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(broadcast));
 	if (set_opt != 0)
 	{
-		printf("Error setting broadcast");
+		printf("Error setting broadcast\n");
 		return (-1);
 	}	
 	pack->host_ip_address = ft_get_host_ip_address(destination_addr);
@@ -50,5 +51,6 @@ int     ft_initialize_socket(struct packet *pack, char **destination_addr)
 	memset(&pack->packet_address, 0, sizeof(pack->packet_address));
 	pack->packet_address.sin_family = AF_INET;
 	inet_pton(AF_INET, pack->host_ip_address, &pack->packet_address.sin_addr);
-    return (socket_fd);
+	timer_icmp->socket_fd = socket_fd;
+	return (socket_fd);
 }

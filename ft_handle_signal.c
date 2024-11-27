@@ -148,8 +148,10 @@ void    ft_signal_handler(int a)
     nbr_of_packet_sent = 0;
     t_list *head;
 
-
-    if (timer_icmp->timer_list != NULL)
+    nbr_of_packet_lost = timer_icmp->nbr_of_packet_lost;
+    nbr_of_packet_sent = timer_icmp->nbr_of_packet_sent;
+    int nbr_of_received_packet = nbr_of_packet_sent - nbr_of_packet_lost;
+    if (timer_icmp->timer_list != NULL && nbr_of_received_packet)
     {
         head = timer_icmp->timer_list;
         while (head != NULL)
@@ -181,16 +183,19 @@ void    ft_signal_handler(int a)
             i++;
         }
     }
-    ft_nbr_of_packet(&nbr_of_packet_sent, &nbr_of_packet_lost);
+    //ft_nbr_of_packet(&nbr_of_packet_sent, &nbr_of_packet_lost);
+
     if (avg != EPSILON)
     {
         avg /= (i);
     }
     head = timer_icmp->timer_list;
-    printf("\n%d packets transmitted, %d packets received, %d%% packet loss\n",
+    printf("--- %s ping statistics ---\n", timer_icmp->address);
+    printf("%d packets transmitted, %d packets received, %d%% packet loss\n",
      nbr_of_packet_sent, nbr_of_packet_sent - nbr_of_packet_lost, ft_get_packet_percentage(nbr_of_packet_sent, nbr_of_packet_lost));
     stddev = ft_get_stddev(i - nbr_of_packet_lost, avg);
-    printf("round-trip min/avg/max/stddev = %.3f/%.3f/%.3f/%.3f ms\n", min, avg, max, stddev);
+    if (nbr_of_received_packet > 0)
+        printf("round-trip min/avg/max/stddev = %.3f/%.3f/%.3f/%.3f ms\n", min, avg, max, stddev);
     ft_lstclear(&timer_icmp->timer_list, &free);
     free(timer_icmp->icmp);
     close(timer_icmp->socket_fd);

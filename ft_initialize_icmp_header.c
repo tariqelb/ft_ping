@@ -1,13 +1,13 @@
 #include "ft_ping.h"
 
 
-void ft_initialize_icmp_header(struct icmp_header **icmp, struct packet *pack) 
+void ft_initialize_icmp_header(struct icmp_header **icmp, struct packet *pack, int rand) 
 {
 	// Generate random ID for the request
-    int rand = ft_get_random_id();  
+    //int rand = ft_get_random_id();  
     memset(*icmp, 0, sizeof(struct icmp_header));
 	// Type 8 for Echo Request
-	(*icmp)->type = 8;  
+	(*icmp)->type = 18;  
     (*icmp)->code = 0;
     (*icmp)->id = htons(rand);
     (*icmp)->sequence = htons(pack->sequence_number);
