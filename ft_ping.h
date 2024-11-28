@@ -21,11 +21,11 @@
 # include <errno.h>
 
 //link list
-# include "link_list/libft.h"
+# include "libft.h"
 
 # define TIMEOUTSEC  1
 # define TIMEOUTUSEC 0
-# define TIMETOLIVE 1
+# define TIMETOLIVE 64
 # define PAYLOADSTRING "Hi, this is Ping echo request!Abcde"
 # define PAYLOADLENGTH 36
 # define EPSILON 1e-6
