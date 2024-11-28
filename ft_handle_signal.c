@@ -110,13 +110,11 @@ void    ft_nbr_of_packet(int *sent, int *lost)
 {
     struct packet_timer *p_time;
     t_list  *head;
-    int     i;
 
     *sent = 0;
     *lost = 0;
     head = timer_icmp->timer_list;
     
-    i = 0;
     while (head)
     {
         p_time = (struct packet_timer *) head->content;
@@ -139,6 +137,7 @@ void    ft_signal_handler(int a)
     double      avg;
     double      stddev;
 
+    (void)a;
     min = EPSILON;
     max = EPSILON;
     avg = EPSILON;

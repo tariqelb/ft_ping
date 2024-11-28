@@ -9,13 +9,9 @@ int	main(int ac, char **av)
 	int					rand;
 	int 				status = 0;
 	int 				v_option = 0;
-	//int 				socket_fd = 0;
 	char 				**destination_addr;
 	struct packet		pack;
 	struct timeval		timeout;
-	//struct icmp_header	*icmp;
-	//char				address[100];
-	char				resolve_address[100];//host resole to ip to print in the first string
 
 	timer_icmp = NULL;
 	timer_icmp = (struct icmp_and_packet_timer *) malloc(sizeof(struct icmp_and_packet_timer));
@@ -31,8 +27,6 @@ int	main(int ac, char **av)
 
 	pack.sequence_number = 1;
 	
-	//icmp = NULL;
-	//icmp = malloc(sizeof(struct icmp_header));
 	timer_icmp->icmp = NULL;
 	timer_icmp->icmp = (struct icmp_header *) malloc(sizeof(struct icmp_header)); 
 	if (timer_icmp->icmp == NULL)
@@ -128,7 +122,6 @@ int	main(int ac, char **av)
 			}
 			else 
 			{
-				//free and handle the error ;
 				free(timer_icmp->icmp);
 				ft_lstclear(&timer_icmp->timer_list, &free);
 				close(timer_icmp->socket_fd);
@@ -137,13 +130,11 @@ int	main(int ac, char **av)
 				return (1);
 			}
 		}
-		// printf("packet sent......\n");
 		FD_ZERO(&pack.tmp_read);
 		pack.tmp_read = pack.read;
 		status = select(timer_icmp->socket_fd + 1, &pack.tmp_read, NULL, NULL, &timeout);
 
 
-		// printf("Status after select : %d\n ", status);
 
 		if (status < 0)
 		{
@@ -155,9 +146,6 @@ int	main(int ac, char **av)
 		}
 		else if (status == 0)
 		{
-			printf("Packet time out\n");
-			//timer_icmp->nbr_of_packet_lost++;
-			//exit(1);
 			ft_set_recv_time(pack.sequence_number, -1);
 			pack.sequence_number += 1;
 			ft_initialize_icmp_header(&timer_icmp->icmp, &pack, rand);
@@ -177,9 +165,6 @@ int	main(int ac, char **av)
 					int ip_header_len = ip_header->ihl * 4;
 					//extract icmp header from the buffer 
 					struct icmp_header *icmp_header = (struct icmp_header *) (pack.recv_buffer + ip_header_len);
-					//extract payload from the buffer
-					char *payload = (char *)(pack.recv_buffer + ip_header_len + sizeof(struct icmp_header));
-					
 					
 					int total_recv_data = len;// - ip_header_len - sizeof(icmp_header);
 					//length of sent data
@@ -209,19 +194,14 @@ int	main(int ac, char **av)
 					}
 					else
 					{
-						//timer_icmp->nbr_of_packet_lost++;
 						ft_set_recv_time(pack.sequence_number, -1);
-						printf("Fail to get packet time : %d\n", len);
+						//printf("Fail to get packet time : %d\n", len);
 					}
-					// if (icmp_header->type == ICMP_ECHOREPLY)
-					printf("This is an ICMP Echo . : %d %d recv size: %d\n", icmp_header->type , icmp_header->code, len);
 
 				}
 				else if (len <= 0)
 				{
 					ft_set_recv_time(pack.sequence_number, len);
-					//printf("Fail to receive data\n");
-					//return (0);
 				}
 			}
 		}

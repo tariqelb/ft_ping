@@ -22,7 +22,7 @@ int     ft_check_parameters(int ac, char **av, int *v_option, char ***destinatio
 	int i = 0;
 	while (destination_addr != NULL && destination_addr[0] != NULL && destination_addr[0][i] != NULL)
 	{
-		printf("Destination address  i %d %s\n", i, *destination_addr[i]);
+		//printf("Destination address  i %d %s\n", i, *destination_addr[i]);
 		i++;
 	}
 	status = ft_check_and_resolve_addr(*destination_addr);

@@ -34,7 +34,7 @@ void ft_print_icmp_message(int type, int code)
                     printf("Destination Unreachable: Network Unreachable\n");
                     break;
                 case ICMP_HOST_UNREACH:
-                    printf("Destination Unreachable: Host Unreachable\n");
+                    printf("Destination Host Unreachable\n");
                     break;
                 case ICMP_PROT_UNREACH:
                     printf("Destination Unreachable: Protocol Unreachable\n");

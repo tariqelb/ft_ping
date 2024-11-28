@@ -85,14 +85,10 @@ int ft_check_is_valid_ip(char *addr)
 
 int     ft_valide_ip_addr(char *addr)
 {
-    int i;
-    int j;
     int status;
 
     struct hostent *host;
-    struct in_addr **addr_list;
     
-    i = 0;
     status = 0;
     if (ft_is_an_ip(addr))
     {

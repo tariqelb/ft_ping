@@ -7,7 +7,6 @@ int	ft_initialize_socket(struct packet *pack, char **destination_addr)
     int     set_opt;
     int     ttl;
     int     i;
-	char	resolved_address[100];
 
     broadcast = 1;
     ttl = TIMETOLIVE;

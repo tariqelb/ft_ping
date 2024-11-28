@@ -67,7 +67,7 @@ void    ft_print_recv_packet(struct iphdr *ip_header, int len, struct icmp_heade
 {
     struct in_addr src_addr;
     src_addr.s_addr =  ip_header->saddr;
-    printf("%d bytes from ", (len - sizeof(struct iphdr)));
+    printf("%ld bytes from ", (len - sizeof(struct iphdr)));
     ft_print_source_hostname(ip_header->saddr),
     printf(" (%s): ", inet_ntoa(src_addr));
     ft_print_icmp_message(icmp_header->type, icmp_header->code);
