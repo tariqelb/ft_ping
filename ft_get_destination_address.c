@@ -138,7 +138,7 @@ char    **ft_get_destination_address(int ac, char **av)
     int word = 0;
     while (i < ac)
     {
-        if (ft_strcmp(av[i], "-v") != 0 && ft_strcmp(av[i], "-?") != 0)
+        if (ft_strcmp(av[i], "-v") != 0 && ft_strcmp(av[i], "-h") != 0)
         {
             int len;
 

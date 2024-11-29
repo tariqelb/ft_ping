@@ -90,7 +90,7 @@ int         ft_check_and_resolve_addr(char **destination_addr);
 //ft_check_for_error.c
 int         ft_check_for_error(int ac, char **av, int *op);
 
-//ft_check_for_help.c (-? option)
+//ft_check_for_help.c (-h option)
 int         ft_check_for_help(int ac, char **av);
 
 //ft_get_destination_address.c

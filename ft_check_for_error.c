@@ -21,7 +21,7 @@ int ft_check_for_error(int ac, char **av, int *op)
         if (av[i][0] == '-' && (ft_strlen(av[i]) > 1))
         {
             equal = ft_strcmp(av[i], "-v");
-            help = ft_strcmp(av[i], "-?");
+            help = ft_strcmp(av[i], "-h");
             if (equal != 0 && help != 0)
             {
                 if (strncmp(av[i], "-v", 2) == 0)

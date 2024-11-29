@@ -40,7 +40,7 @@ void ft_print_ip_header(struct iphdr *ip_header) {
 void    ft_print_icmp_header(struct icmp_header *icmp_header, int size)
 {
     printf("ICMP: type %d, code %d, size %d, id 0x%04x, seq 0x%04x\n", 
-        icmp_header->type, icmp_header->code, size, icmp_header->id, ntohs(icmp_header->sequence) - 1 );
+        icmp_header->type, icmp_header->code, size, icmp_header->id, ntohs(icmp_header->sequence));
 }
 
 void    ft_print_source_hostname(uint32_t ip_address) 

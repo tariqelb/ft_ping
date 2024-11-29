@@ -25,7 +25,7 @@ int	main(int ac, char **av)
 	timer_icmp->nbr_of_packet_sent = 0;
 	timer_icmp->nbr_of_packet_lost = 0;
 
-	pack.sequence_number = 1;
+	pack.sequence_number = 0;
 	
 	timer_icmp->icmp = NULL;
 	timer_icmp->icmp = (struct icmp_header *) malloc(sizeof(struct icmp_header)); 
@@ -80,7 +80,7 @@ int	main(int ac, char **av)
 	signal(SIGINT, ft_signal_handler);
 	int sent_data_len = sizeof(pack.send_buffer) - sizeof(struct icmp_header);
 	char hex_string[20];
-	printf("PING %s (%s) %d data byte", 
+	printf("PING %s (%s): %d data bytes", 
 		timer_icmp->address,
 		timer_icmp->resolved_address,
 		sent_data_len);
@@ -169,7 +169,7 @@ int	main(int ac, char **av)
 					int total_recv_data = len;// - ip_header_len - sizeof(icmp_header);
 					//length of sent data
 					
-					if (icmp_header->type == 0)
+					if (icmp_header->type == 0 || icmp_header->type == 8)
 					{
 						timer_icmp->nbr_of_packet_lost--;
 						ft_set_recv_time(pack.sequence_number, len);

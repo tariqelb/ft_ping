@@ -86,15 +86,16 @@ int ft_check_is_valid_ip(char *addr)
 int     ft_valide_ip_addr(char *addr)
 {
     int status;
-
+    int valid;
     struct hostent *host;
     
     status = 0;
-    if (ft_is_an_ip(addr))
+    valid = ft_is_an_ip(addr);
+    if (valid)
     {
         status = ft_check_is_valid_ip(addr);
     }
-    if (status != 0)
+    if (valid == 0 || status != 0)
     {
         //resolve host name
         host = gethostbyname(addr);
@@ -109,8 +110,8 @@ int     ft_valide_ip_addr(char *addr)
         {
             printf("Addr %d %s\n", i, inet_ntoa(*addr_list[i]));
             i++;
-        }
-        printf("try to resolve this address : %s", addr);*/
+        }*/
+        //printf("try to resolve this address : %s  %d\n", addr,  status);
     }
     return (0);
 }

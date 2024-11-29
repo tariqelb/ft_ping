@@ -8,7 +8,7 @@ int     ft_check_parameters(int ac, char **av, int *v_option, char ***destinatio
 	status = ft_check_for_error(ac, av, v_option);
 	if (status == -1)
 		return (1);
-	//check for -? help
+	//check for -h help
 	status = ft_check_for_help(ac, av); 
 	if (status == -1)
 		return (1);
