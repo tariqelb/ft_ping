@@ -150,6 +150,7 @@ void    ft_signal_handler(int a)
     nbr_of_packet_lost = timer_icmp->nbr_of_packet_lost;
     nbr_of_packet_sent = timer_icmp->nbr_of_packet_sent;
     int nbr_of_received_packet = nbr_of_packet_sent - nbr_of_packet_lost;
+	//printf("lost packer opt [%d] [%d] %d\n", timer_icmp->nbr_of_packet_lost, timer_icmp->nbr_of_packet_sent, nbr_of_received_packet);
     if (timer_icmp->timer_list != NULL && nbr_of_received_packet)
     {
         head = timer_icmp->timer_list;
@@ -191,7 +192,7 @@ void    ft_signal_handler(int a)
     head = timer_icmp->timer_list;
     printf("--- %s ping statistics ---\n", timer_icmp->address);
     printf("%d packets transmitted, %d packets received, %d%% packet loss\n",
-     nbr_of_packet_sent, nbr_of_packet_sent - nbr_of_packet_lost, ft_get_packet_percentage(nbr_of_packet_sent, nbr_of_packet_lost));
+     nbr_of_packet_sent, nbr_of_received_packet , ft_get_packet_percentage(timer_icmp->nbr_of_packet_sent, timer_icmp->nbr_of_packet_lost));
     stddev = ft_get_stddev(i - nbr_of_packet_lost, avg);
     if (nbr_of_received_packet > 0)
         printf("round-trip min/avg/max/stddev = %.3f/%.3f/%.3f/%.3f ms\n", min, avg, max, stddev);

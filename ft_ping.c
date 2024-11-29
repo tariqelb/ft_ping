@@ -171,11 +171,11 @@ int	main(int ac, char **av)
 					
 					if (icmp_header->type == 0 || icmp_header->type == 8)
 					{
-						timer_icmp->nbr_of_packet_lost--;
 						ft_set_recv_time(pack.sequence_number, len);
 						double ms = ft_get_packet_milisec(pack.sequence_number);
 						if(ms > EPSILON)
 						{
+							timer_icmp->nbr_of_packet_lost--;
 							printf("%d bytes from %s: icmp_seq=%d ttl=%d time=%.3f ms\n",
 								total_recv_data,
 								inet_ntoa(*(struct in_addr *)&ip_header->saddr),
@@ -190,12 +190,11 @@ int	main(int ac, char **av)
 						ft_print_ip_header(ip_header);
 						ft_print_icmp_header(timer_icmp->icmp, sizeof(pack.send_buffer));
 						ft_set_recv_time(pack.sequence_number, -1);
-
 					}
 					else
 					{
 						ft_set_recv_time(pack.sequence_number, -1);
-						//printf("Fail to get packet time : %d\n", len);
+						// printf("Fail to get packet time : %d\n", len);
 					}
 
 				}
