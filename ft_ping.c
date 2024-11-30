@@ -130,6 +130,7 @@ int	main(int ac, char **av)
 				return (1);
 			}
 		}
+		maybe:
 		FD_ZERO(&pack.tmp_read);
 		pack.tmp_read = pack.read;
 		status = select(timer_icmp->socket_fd + 1, &pack.tmp_read, NULL, NULL, &timeout);
@@ -168,8 +169,11 @@ int	main(int ac, char **av)
 					
 					int total_recv_data = len;// - ip_header_len - sizeof(icmp_header);
 					//length of sent data
-					
-					if (icmp_header->type == 0 || icmp_header->type == 8)
+					if (icmp_header->type == 8)
+					{
+						goto maybe;
+					}	
+					if (icmp_header->type == 0)// || icmp_header->type == 8)
 					{
 						ft_set_recv_time(pack.sequence_number, len);
 						double ms = ft_get_packet_milisec(pack.sequence_number);
@@ -179,7 +183,8 @@ int	main(int ac, char **av)
 							printf("%d bytes from %s: icmp_seq=%d ttl=%d time=%.3f ms\n",
 								total_recv_data,
 								inet_ntoa(*(struct in_addr *)&ip_header->saddr),
-								pack.sequence_number,
+								ntohs(icmp_header->sequence),
+								//pack.sequence_number,
 								ip_header->ttl,
 								ms);
 						}
@@ -191,10 +196,12 @@ int	main(int ac, char **av)
 						ft_print_icmp_header(timer_icmp->icmp, sizeof(pack.send_buffer));
 						ft_set_recv_time(pack.sequence_number, -1);
 					}
-					else
+					else 
 					{
-						ft_set_recv_time(pack.sequence_number, -1);
-						// printf("Fail to get packet time : %d\n", len);
+						if (icmp_header->type != 8)
+							ft_set_recv_time(pack.sequence_number, -1);
+								//pack.sequence_number,
+						// printf("Fail to get packet time : %d  seq %d\n", len, ntohs(icmp_header->sequence));
 					}
 
 				}

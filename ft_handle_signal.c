@@ -178,7 +178,7 @@ void    ft_signal_handler(int a)
                 }
             }
             //printf("time taken : %f\n", ft_get_time_in_msecond(head));
-            //printf("time taken : %.3f\n", ms);
+            //printf("time taken : i = %d, %.3f\n",i, ms);
             head = head->next;
             i++;
         }
