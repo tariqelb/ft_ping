@@ -78,6 +78,7 @@ int ft_check_is_valid_ip(char *addr)
         i++;
         nbr_of_split_word++;
     }
+    ft_free_split(split_addr);
     if (nbr_of_split_word != 4)
         return (1);
     return (0);
