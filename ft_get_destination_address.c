@@ -130,7 +130,7 @@ char    **ft_get_destination_address(int ac, char **av)
         return (NULL);
     }
     destination = NULL;
-    destination = (char **) malloc(sizeof(char *) * (nbr_of_addr + 1));
+    destination = (char **) malloc(sizeof(char *) * (nbr_of_addr + 2));
     if (destination == NULL)
         return (NULL);
     destination[nbr_of_addr + 1] = NULL;
